@@ -1,144 +1,476 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Happy Monthsary, Love 💕</title>
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Ridge Letters</title>
+  <meta name="theme-color" content="#2c3a32" />
+  <link rel="icon" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,560&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1c1917;
+      --paper: #f3eee6;
+      --pine: #2c3a32;
+      --pine-deep: #1b2620;
+      --clay: #b56962;
+      --mist: #8a8580;
+    }
+    * { box-sizing: border-box; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+    html, body { margin: 0; min-height: 100%; height: 100%; background: var(--pine-deep); color: var(--paper); font-family: Outfit, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    #ui { position: absolute; inset: 0; pointer-events: none; display: flex; flex-direction: column; }
+    .hud { pointer-events: auto; display: flex; justify-content: space-between; padding: 16px; padding-top: max(16px, env(safe-area-inset-top)); }
+    .chip { background: rgba(27,38,32,.7); border: 1px solid rgba(243,238,230,.15); border-radius: 16px; padding: 12px 16px; }
+    .chip h1 { font-family: Fraunces, Georgia, serif; font-size: 18px; margin: 0; font-weight: 500; }
+    .chip p { margin: 4px 0 0; font-size: 12px; opacity: .7; font-variant-numeric: tabular-nums; }
+    .iconbtn { width: 44px; height: 44px; border: 1px solid rgba(243,238,230,.2); background: var(--pine); color: var(--paper); border-radius: 12px; cursor: pointer; }
+    .prompt { margin: 8px auto 0; max-width: 320px; text-align: center; background: rgba(27,38,32,.65); border-radius: 12px; padding: 8px 16px; font-size: 14px; }
+    .controls { pointer-events: auto; margin-top: auto; padding: 16px; padding-bottom: max(16px, env(safe-area-inset-bottom)); display: flex; justify-content: space-between; gap: 12px; max-width: 420px; width: 100%; align-self: center; }
+    .hold { min-width: 96px; height: 56px; border-radius: 12px; border: 1px solid rgba(243,238,230,.2); background: var(--pine); color: var(--paper); cursor: pointer; font: 600 12px Outfit, sans-serif; }
+    .open { min-width: 144px; height: 48px; border: 0; border-radius: 12px; background: var(--clay); color: var(--paper); font: 600 16px Outfit, sans-serif; cursor: pointer; }
+    .overlay { position: absolute; inset: 0; background: rgba(28,25,23,.45); display: flex; align-items: flex-end; justify-content: center; padding: 20px; pointer-events: auto; }
+    .card { width: 100%; max-width: 420px; background: rgba(44,58,50,.92); border: 1px solid rgba(243,238,230,.15); border-radius: 24px; padding: 28px; margin-bottom: env(safe-area-inset-bottom); }
+    .card .eyebrow { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; opacity: .6; font-weight: 500; }
+    .card h2 { font-family: Fraunces, Georgia, serif; font-size: 36px; margin: 12px 0 0; font-weight: 500; line-height: 1; }
+    .card p { font-size: 14px; line-height: 1.55; opacity: .85; }
+    .hint { font-size: 12px; color: var(--mist); }
+    .btn { display: block; width: 100%; height: 48px; border: 0; border-radius: 12px; background: var(--paper); color: var(--ink); font: 600 16px Outfit, sans-serif; cursor: pointer; margin-top: 16px; }
+    .btn.ghost { background: transparent; color: var(--paper); }
+    .polaroid { width: 100%; max-width: 22rem; background: var(--paper); color: var(--ink); padding: 12px 12px 24px; transform: rotate(-1.2deg); position: relative; }
+    .polaroid img { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; }
+    .polaroid .meta { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--mist); margin: 16px 8px 0; font-weight: 500; }
+    .polaroid .letter { font-family: Fraunces, Georgia, serif; font-style: italic; font-size: 1.05rem; line-height: 1.5; margin: 12px 8px 0; }
+    .close { position: absolute; right: -8px; top: -8px; width: 40px; height: 40px; border-radius: 999px; border: 0; background: var(--pine); color: var(--paper); cursor: pointer; font-size: 18px; }
+    .journal { width: 100%; max-width: 520px; background: var(--paper); color: var(--ink); border-radius: 24px; padding: 24px; }
+    .journal h2 { font-family: Fraunces, Georgia, serif; margin: 0; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 20px; }
+    .grid button { border: 0; background: transparent; padding: 0; text-align: left; cursor: pointer; color: var(--mist); font-size: 12px; }
+    .grid img, .ph { width: 100%; aspect-ratio: 3/4; object-fit: cover; background: #e7ddd0; display: flex; align-items: center; justify-content: center; }
+    .hidden { display: none !important; }
+    button:disabled { opacity: .4; cursor: default; }
+  
+/* Mobile-friendly layout + gentle atmosphere animations */
+* { box-sizing: border-box; }
+html, body { width: 100%; min-width: 0; height: 100%; overflow: hidden; overscroll-behavior: none; }
+body { -webkit-text-size-adjust: 100%; -webkit-touch-callout: none; touch-action: none; }
+img, canvas, button { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+button, .btn { min-height: 44px; touch-action: manipulation; }
+button:focus-visible, .btn:focus-visible { outline: 2px solid #d7b18a; outline-offset: 3px; }
+canvas { max-width: 100%; }
+img { max-width: 100%; height: auto; }
+#letterWrap, #journalWrap, #summit { max-width: min(92vw, 760px); max-height: 86dvh; overflow: hidden; overscroll-behavior: none; }
+#letterWrap { animation: letterRise .45s cubic-bezier(.2,.75,.25,1) both; }
+#journalWrap { animation: journalFade .35s ease-out both; }
+#summit { animation: summitReveal .8s cubic-bezier(.18,.8,.25,1) both; }
+@keyframes letterRise { from { opacity: 0; transform: translateY(18px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes journalFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes summitReveal { 0% { opacity: 0; transform: translateY(24px) scale(.96); } 70% { opacity: 1; transform: translateY(-3px) scale(1.01); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+button, .btn { transition: transform .16s ease, filter .16s ease, background-color .16s ease; }
+button:active, .btn:active { transform: scale(.97); }
+@media (max-width: 700px) {
+  body { font-size: 15px; }
+  #letterWrap, #journalWrap, #summit { width: calc(100vw - 24px); max-width: calc(100vw - 24px); max-height: 82dvh; overflow: hidden; padding: 16px !important; }
+  #letterText { line-height: 1.65; overflow-wrap: anywhere; }
+  #letterImg { width: 100%; max-height: 38dvh; object-fit: contain; }
+  #journalGrid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 10px !important; }
+  #controls { gap: 8px; }
+  #controls button, #controls .btn { min-width: 44px; }
+  #hud { max-width: calc(100vw - 20px); }
+}
+@media (max-width: 380px) {
+  #letterWrap, #journalWrap, #summit { padding: 12px !important; }
+  #journalGrid { grid-template-columns: 1fr !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}
+
+
+#ambientMotes { position: fixed; inset: 0; pointer-events: none; z-index: 3; overflow: hidden; }
+.ambient-mote { position: absolute; bottom: -12px; width: 3px; height: 3px; border-radius: 50%; background: rgba(241, 218, 178, .68); box-shadow: 0 0 8px rgba(241,218,178,.35); animation: moteDrift var(--duration, 12s) linear infinite; animation-delay: var(--delay, 0s); }
+@keyframes moteDrift { 0% { transform: translate3d(0,0,0); opacity: 0; } 12% { opacity: .65; } 85% { opacity: .45; } 100% { transform: translate3d(var(--drift, 22px), -105vh, 0); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { #ambientMotes { display:none; } }
+
+</style>
 </head>
 <body>
-  <!-- Floating hearts background -->
-  <div class="hearts-bg" id="hearts"></div>
-
-  <!-- Hero Section -->
-  <header class="hero">
-    <div class="hero-content">
-      <p class="eyebrow">✨ From Gilbert with love ✨</p>
-      <h1>Happy <span id="months-count">59</span>th Monthsary,</h1>
-      <h1 class="name">Love 💖</h1>
-      <p class="date">Since October 19, 2021</p>
-      <div class="heart-pulse">💗</div>
-    </div>
-  </header>
-
-  <!-- Main Message -->
-  <section class="message-section">
-    <div class="card">
-      <h2>To my dearest Love 💌</h2>
-      <p class="taglish">
-        Hi Loveee! 🥹<br><br>
-        Another monthsary na naman tayo! Can you believe it? 
-        <strong>59 months</strong> na tayong magkasama. Grabe, ang bilis ng oras no?
-        Pero every day with you feels special pa rin.<br><br>
-        
-        Thank you for being my peace, my home, and my favorite person. 
-        Kahit may mga bad days, as long as kasama kita, okay lang lahat. 
-        You make ordinary days feel extraordinary. 🥹💕<br><br>
-        
-        I love you so much, Love. More months, more years, and more forever with you. 
-        Happy monthsary, my baby! 😘
-      </p>
-      <p class="signature">— Gilbert 🤍</p>
-    </div>
-  </section>
-
-  <!-- Fun Stats -->
-  <section class="stats-section">
-    <h2 class="section-title">Our Little Love Stats 📊</h2>
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-emoji">📅</div>
-        <div class="stat-number">59</div>
-        <div class="stat-label">Months together</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-emoji">🌅</div>
-        <div class="stat-number">1,795+</div>
-        <div class="stat-label">Days of us</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-emoji">❤️</div>
-        <div class="stat-number">∞</div>
-        <div class="stat-label">Times I fell for you</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-emoji">🤞</div>
-        <div class="stat-number">1</div>
-        <div class="stat-label">Forever with you</div>
+<div id="ambientMotes" aria-hidden="true"></div>
+  <canvas id="c"></canvas>
+  <div id="ui">
+    <div class="hud hidden" id="hud">
+      <div class="chip"><h1>Ridge Letters</h1><p id="stats">0/6 camps · 1284 m</p></div>
+      <div style="display:flex;gap:8px">
+        <button class="iconbtn" id="journalBtn" aria-label="Journal">J</button>
+        <button class="iconbtn" id="muteBtn" aria-label="Mute">M</button>
       </div>
     </div>
-  </section>
-
-  <!-- Reasons I Love You -->
-  <section class="reasons-section">
-    <h2 class="section-title">Why I love you, Love 🥰</h2>
-    <div class="reasons-list">
-      <div class="reason">
-        <span class="reason-num">01</span>
-        <p>Because you always make me feel safe and loved, kahit simple days lang.</p>
-      </div>
-      <div class="reason">
-        <span class="reason-num">02</span>
-        <p>Because your smile is still my favorite view after all these months.</p>
-      </div>
-      <div class="reason">
-        <span class="reason-num">03</span>
-        <p>Because even when life gets hard, we always choose each other.</p>
-      </div>
-      <div class="reason">
-        <span class="reason-num">04</span>
-        <p>Because you’re my best friend and my home at the same time.</p>
-      </div>
-      <div class="reason">
-        <span class="reason-num">05</span>
-        <p>Because every monthsary with you still feels brand new. 💕</p>
+    <p class="prompt hidden" id="prompt"></p>
+    <div class="controls hidden" id="controls">
+      <button class="hold" id="down">Descend</button>
+      <button class="open hidden" id="openBtn">Open picture</button>
+      <button class="hold" id="up">Climb</button>
+    </div>
+    <div class="overlay" id="title">
+      <div class="card">
+        <div class="eyebrow">Isang climb, six letters</div>
+        <h2>Ridge Letters</h2>
+        <p>Lakarin mo 'yung switchbacks. Sa every camp, open the photograph. May note sa loob, para sa'yo.</p>
+        <p class="hint">I-drag pataas 'yung pad para umakyat. Hold Climb or Descend. Space to open a picture.</p>
+        <button class="btn" id="begin">Simulan na</button>
       </div>
     </div>
-  </section>
-
-  <!-- Cute Interactive Part -->
-  <section class="interactive-section">
-    <h2 class="section-title">Tap the heart, Love! 💗</h2>
-    <button class="big-heart-btn" id="heartBtn">
-      <span class="heart-icon">❤️</span>
-      <span class="click-text">Click me!</span>
-    </button>
-    <p class="love-counter">You made me fall in love <span id="clickCount">0</span> more times 😘</p>
-  </section>
-
-  <!-- Countdown Section (at the very end) -->
-  <section class="countdown-section">
-    <h2 class="section-title">Countdown to our Anniversary ⏳</h2>
-    <p class="countdown-subtitle">October 19, 2026 • 5th Year / 60th Monthsary</p>
-    <div class="countdown" id="countdown">
-      <div class="countdown-box">
-        <span class="countdown-number" id="days">00</span>
-        <span class="countdown-label">Days</span>
-      </div>
-      <div class="countdown-box">
-        <span class="countdown-number" id="hours">00</span>
-        <span class="countdown-label">Hours</span>
-      </div>
-      <div class="countdown-box">
-        <span class="countdown-number" id="minutes">00</span>
-        <span class="countdown-label">Mins</span>
-      </div>
-      <div class="countdown-box">
-        <span class="countdown-number" id="seconds">00</span>
-        <span class="countdown-label">Secs</span>
+    <div class="overlay hidden" id="letterWrap" style="align-items:center">
+      <div class="polaroid">
+        <button class="close" id="letterClose" aria-label="Close">×</button>
+        <img id="letterImg" alt="" />
+        <div class="meta" id="letterMeta"></div>
+        <p class="letter" id="letterText"></p>
       </div>
     </div>
-    <p class="countdown-note">Can’t wait to celebrate with you, Love! 🥰</p>
-  </section>
+    <div class="overlay hidden" id="journalWrap" style="align-items:center">
+      <div class="journal">
+        <div style="display:flex;justify-content:space-between;align-items:start">
+          <div><h2>Trail journal</h2><p class="hint">Mga pictures na nabuksan mo along the ridge.</p></div>
+          <button class="iconbtn" id="journalClose" style="background:transparent;color:var(--ink);border-color:#ddd">×</button>
+        </div>
+        <div class="grid" id="journalGrid"></div>
+      </div>
+    </div>
+    <div class="overlay hidden" id="summit">
+      <div class="card">
+        <div class="eyebrow">Tahimik ang mundo sa tuktok</div>
+        <h2>Nandito ka na.</h2>
+        <p>Anim na kampo, anim na larawan, at ilang memories natin. Salamat sa paglaro! Sana napangiti ka kahit konti. Marami pa tayong puwedeng gawin, puntahan, at pagtawanan together.</p>
+        <button class="btn" id="stay">Stay</button>
+        <button class="btn ghost" id="again">Again</button>
+      </div>
+    </div>
+  </div>
+<script>
+const CAMPS = [
+  { id:"meadow", name:"Wildflower Camp", elevation:1284, t:0.06, photo:"photos/meadow.jpg", prompt:"May larawan na naghihintay sa batong nasisinagan ng araw.",
+    letter:"Alam mo, ang saya lang na may ikaw sa mga araw ko. Kahit simpleng kwentuhan, tawanan sa kung anu-anong bagay, o tambay lang na walang ginagawa, nagiging mas okay ang araw ko. Sana marami pa tayong ganitong moments—yung walang pressure, basta masaya lang tayo." },
+  { id:"pines", name:"Pine Hollow", elevation:1710, t:0.22, photo:"photos/pines.jpg", prompt:"May litrato na nakasandal sa poste ng tolda.",
+    letter:"Gusto ko yung feeling na puwede tayong maging sarili natin kapag magkasama. Puwedeng seryoso minsan, puwedeng puro kalokohan din. At kapag pagod ka, nandito lang ako para makinig o samahan ka—kahit wala akong perfect na advice, at least may kakampi ka." },
+  { id:"lake", name:"Mirror Lake", elevation:2186, t:0.4, photo:"photos/lake.jpg", prompt:"May larawan sa mga batong nasa tabi ng lawa.",
+    letter:"Isa sa mga gusto ko sa atin, hindi naman kailangang laging bongga para maging memorable. Minsan yung random na picture, simpleng lakad, o mga bagay na tayo lang ang nakaka-gets ang pinaka-nakakatawa. Sana hindi mawala yung pagiging comfortable natin sa isa’t isa, kahit tumagal pa tayo." },
+  { id:"ridge", name:"Cloudline", elevation:2688, t:0.58, photo:"photos/ridge.jpg", prompt:"May larawang nakatago sa ilalim ng bunton ng mga bato.",
+    letter:"Hindi naman tayo laging mag-aagree, at sure akong may times na pareho tayong matigas ang ulo. Pero sana lagi pa rin nating piliing mag-usap nang maayos, makinig, at ayusin kung may problema. Mas gusto kong team tayo kaysa magkalaban. Tapos pagkatapos, bati na ulit—at puwede na tayong maghanap ng kakainin." },
+  { id:"stars", name:"Star Camp", elevation:3180, t:0.78, photo:"photos/stars.jpg", prompt:"May larawan na naghihintay sa tabi ng apoy.",
+    letter:"Salamat sa pag-share ng araw mo sa akin—sa good news, sa reklamo, sa random stories, at kahit sa mga bagay na hindi naman importante pero gusto mo lang ikwento. Gusto kong patuloy na makilala ka habang pareho tayong naggo-grow. At oo, handa pa rin akong makinig sa mga kwentong alam ko na ang ending." },
+  { id:"summit", name:"The Summit", elevation:3612, t:0.965, photo:"photos/summit.jpg", prompt:"Ang huling larawan ay naghihintay sa tuktok.",
+    letter:"Ayun, nakaabot ka rin sa summit! Sana nag-enjoy ka sa little adventure na ’to. Ginawa ko ito para balikan natin yung ilang memories natin, at para may bago rin tayong ma-add sa listahan. Hindi naman kailangang laging grand ang mga bagay—basta may tawanan, konting adventure, pagkain pagkatapos, at ikaw na kasama ko, solid na. Love you, and tara, gawa pa tayo ng mas maraming memories." }
+];
+const WORLD_W = 1600, WORLD_H = 5600, SPEED = 310, NEAR = 0.028;
+const KEY = "ridge-letters-v1";
 
-  <!-- Footer -->
-  <footer class="footer">
-    <p>Made with 💕 by Gilbert for Rowee</p>
-    <p class="small">October 19, 2021 → Forever</p>
-    <p class="small">Happy Monthsary, Love! 😘</p>
-  </footer>
+function mountainHalf(y){ const t=1-y/WORLD_H; const e=t*t*(3-2*t); return WORLD_W*(0.48-e*0.16); }
+function buildPath(){
+  const points=[], n=100;
+  for(let i=0;i<=n;i++){
+    const t=i/n, y=WORLD_H-220-t*(WORLD_H-520), half=mountainHalf(y)-150;
+    points.push({x:WORLD_W/2+Math.sin(t*Math.PI*7.15)*half, y});
+  }
+  const lengths=[0]; let total=0;
+  for(let i=1;i<points.length;i++){ total+=Math.hypot(points[i].x-points[i-1].x, points[i].y-points[i-1].y); lengths.push(total); }
+  return {points, lengths, total};
+}
+function sample(path,t){
+  const dist=Math.max(0,Math.min(1,t))*path.total;
+  let lo=0, hi=path.lengths.length-1;
+  while(lo<hi-1){ const mid=(lo+hi)>>1; if(path.lengths[mid]<dist) lo=mid; else hi=mid; }
+  const span=path.lengths[hi]-path.lengths[lo]||1, u=(dist-path.lengths[lo])/span;
+  const a=path.points[lo], b=path.points[hi];
+  let tx=b.x-a.x, ty=b.y-a.y, len=Math.hypot(tx,ty)||1;
+  return {x:a.x+(b.x-a.x)*u, y:a.y+(b.y-a.y)*u, tx:tx/len, ty:ty/len};
+}
+function rng(seed){ return ()=>{ seed|=0; seed=(seed+0x6d2b79f5)|0; let t=Math.imul(seed^(seed>>>15),1|seed); t=(t+Math.imul(t^(t>>>7),61|t))^t; return ((t^(t>>>14))>>>0)/4294967296; }; }
+function createWorld(){
+  const path=buildPath(), rand=rng(42);
+  const camps=CAMPS.map(c=>{ const p=sample(path,c.t); return {id:c.id,x:p.x,y:p.y,tentFlip:p.tx<0}; });
+  const decorations=[];
+  for(let i=0;i<86;i++){
+    const t=0.04+rand()*0.92, p=sample(path,t), side=rand()<0.5?-1:1, dist=70+rand()*220;
+    const x=p.x+side*dist, y=p.y+(rand()-0.4)*40;
+    if(Math.abs(x-WORLD_W/2)>mountainHalf(y)-20) continue;
+    if(camps.some(c=>Math.hypot(c.x-x,c.y-y)<160)) continue;
+    const elev=1-y/WORLD_H;
+    decorations.push({kind:elev>0.82?"pineSnow":elev>0.55&&rand()<0.55?"pineSnow":"pine", x,y, scale:0.32+rand()*0.24, flip:side>0});
+  }
+  for(let i=0;i<40;i++){
+    const p=sample(path,rand());
+    decorations.push({kind:"rocks", x:p.x+(rand()-0.5)*240, y:p.y+10, scale:0.18+rand()*0.16, flip:rand()>0.5});
+  }
+  for(let i=0;i<28;i++){
+    const p=sample(path,rand()*0.45);
+    decorations.push({kind:"flowers", x:p.x+(rand()-0.5)*200, y:p.y+6, scale:0.16+rand()*0.14, flip:rand()>0.5});
+  }
+  decorations.sort((a,b)=>a.y-b.y);
+  const stars=Array.from({length:90},()=>({x:rand()*WORLD_W,y:rand()*WORLD_H*0.45,r:0.6+rand()*1.4}));
+  return {path, decorations, camps, stars};
+}
+function loadImg(src){
+  return new Promise((res)=>{
+    const i=new Image();
+    i.onload=()=>res(i);
+    i.onerror=()=>{
+      // Lightweight drawn fallback for optional game sprites when sprite files aren't supplied.
+      const c=document.createElement("canvas");
+      c.width=128; c.height=160;
+      const g=c.getContext("2d");
+      if(src.includes("hiker")){
+        g.fillStyle="#2c3a32"; g.fillRect(40,54,48,65);
+        g.fillStyle="#d9b89a"; g.beginPath(); g.arc(64,39,23,0,Math.PI*2); g.fill();
+        g.fillStyle="#262b29"; g.fillRect(41,20,46,12);
+        g.fillStyle="#40352e"; g.fillRect(43,112,17,40); g.fillRect(68,112,17,40);
+        g.fillStyle="#b56962"; g.fillRect(30,65,15,42); g.fillRect(83,65,15,42);
+      } else if(src.includes("tent")){
+        g.fillStyle="#b56962"; g.beginPath(); g.moveTo(10,130); g.lineTo(64,34); g.lineTo(118,130); g.closePath(); g.fill();
+        g.fillStyle="#f3eee6"; g.beginPath(); g.moveTo(49,130); g.lineTo(64,78); g.lineTo(79,130); g.closePath(); g.fill();
+      } else if(src.includes("pine")){
+        g.fillStyle="#4a5a49"; for(let y=15;y<125;y+=28){g.beginPath();g.moveTo(64,y);g.lineTo(18,y+34);g.lineTo(110,y+34);g.closePath();g.fill();}
+        g.fillStyle="#594838";g.fillRect(58,120,12,35);
+      } else if(src.includes("rocks")){
+        g.fillStyle="#867b6c";g.beginPath();g.moveTo(10,140);g.lineTo(30,90);g.lineTo(62,108);g.lineTo(85,65);g.lineTo(118,140);g.closePath();g.fill();
+      } else if(src.includes("flowers")){
+        g.fillStyle="#58704e";g.fillRect(61,65,6,90);
+        for(const [x,y] of [[48,58],[76,78],[53,99],[80,43]]){g.fillStyle="#d8a6a2";g.beginPath();g.arc(x,y,11,0,Math.PI*2);g.fill();g.fillStyle="#e7c66e";g.beginPath();g.arc(x,y,4,0,Math.PI*2);g.fill();}
+      } else if(src.includes("campfire")){
+        g.fillStyle="#594838";g.fillRect(25,124,78,9);
+        g.fillStyle="#d66b42";g.beginPath();g.moveTo(64,42);g.quadraticCurveTo(104,90,64,124);g.quadraticCurveTo(24,90,64,42);g.fill();
+        g.fillStyle="#f1c06a";g.beginPath();g.moveTo(64,68);g.quadraticCurveTo(84,95,64,111);g.quadraticCurveTo(44,95,64,68);g.fill();
+      }
+      res(c);
+    };
+    i.src=src;
+  });
+}
 
-  <script src="script.js"></script>
+const canvas=document.getElementById("c"), ctx=canvas.getContext("2d");
+const title=document.getElementById("title");
+const hud=document.getElementById("hud");
+const controls=document.getElementById("controls");
+const letterWrap=document.getElementById("letterWrap");
+const journalWrap=document.getElementById("journalWrap");
+const summit=document.getElementById("summit");
+const letterImg=document.getElementById("letterImg");
+const letterMeta=document.getElementById("letterMeta");
+const letterText=document.getElementById("letterText");
+const journalGrid=document.getElementById("journalGrid");
+const openBtn=document.getElementById("openBtn");
+const prompt=document.getElementById("prompt");
+const stats=document.getElementById("stats");
+const world=createWorld();
+let images=null, phase="title", opened=new Set(), near=null, active=null, muted=false;
+const keys=new Set(); let climb=false, descend=false;
+const startT=CAMPS[0].t;
+let pose=sample(world.path,startT);
+const sim={ t:startT, x:pose.x, y:pose.y, tx:pose.tx, ty:pose.ty, facing:1, walking:false, anim:0, time:0 };
+const cam={ x:0, y:0, w:390, h:844 };
+
+try {
+  const s=JSON.parse(localStorage.getItem(KEY)||"null");
+  if(s&&s.version===1){ if(s.t>0.02) sim.t=s.t; (s.opened||[]).forEach(id=>opened.add(id)); muted=!!s.muted; pose=sample(world.path,sim.t); sim.x=pose.x; sim.y=pose.y; }
+} catch {}
+
+Promise.all([
+  ...[1,2,3,4].map(i=>loadImg("sprites/hiker-idle-"+i+".png")),
+  ...[1,2,3,4].map(i=>loadImg("sprites/hiker-walk-"+i+".png")),
+  ...[1,2,3,4].map(i=>loadImg("sprites/campfire-"+i+".png")),
+  loadImg("sprites/tent.png"), loadImg("sprites/pine.png"), loadImg("sprites/pine-snow.png"),
+  loadImg("sprites/rocks.png"), loadImg("sprites/flowers.png"),
+  ...CAMPS.map(c=>loadImg(c.photo))
+]).then(arr=>{
+  images={ idle:arr.slice(0,4), walk:arr.slice(4,8), fire:arr.slice(8,12), tent:arr[12], pine:arr[13], pineSnow:arr[14], rocks:arr[15], flowers:arr[16], photos:{} };
+  CAMPS.forEach((c,i)=>images.photos[c.id]=arr[17+i]);
+}).catch(console.error);
+
+function lerp(a,b,t){ return a+(b-a)*t; }
+function rgb(c,a){ return a==null||a===1?`rgb(${c[0]|0},${c[1]|0},${c[2]|0})`:`rgba(${c[0]|0},${c[1]|0},${c[2]|0},${a})`; }
+function skyFor(t){
+  const keys=[{t:0,top:[232,196,168],bot:[186,150,124]},{t:0.18,top:[176,198,196],bot:[132,154,128]},{t:0.38,top:[156,186,204],bot:[168,176,164]},{t:0.58,top:[210,168,140],bot:[156,132,118]},{t:0.78,top:[16,22,40],bot:[32,40,58]},{t:1,top:[255,196,164],bot:[186,142,122]}];
+  let i=0; while(i<keys.length-2 && t>keys[i+1].t) i++;
+  const a=keys[i], b=keys[i+1], u=(t-a.t)/(b.t-a.t||1);
+  const mix=(p,q)=>[lerp(p[0],q[0],u),lerp(p[1],q[1],u),lerp(p[2],q[2],u)];
+  return {top:mix(a.top,b.top), bot:mix(a.bot,b.bot), night:t>0.68&&t<0.9};
+}
+function drawSprite(img,x,y,h,flip){
+  if(!img) return;
+  const w=(img.width/img.height)*h;
+  ctx.save(); ctx.translate(x,y); if(flip) ctx.scale(-1,1); ctx.drawImage(img,-w/2,-h,w,h); ctx.restore();
+}
+function sx(x){ return x-cam.x; } function sy(y){ return y-cam.y; }
+
+function draw(){
+  if(!images) return;
+  const sky=skyFor(sim.t);
+  const g=ctx.createLinearGradient(0,0,0,cam.h); g.addColorStop(0,rgb(sky.top)); g.addColorStop(1,rgb(sky.bot));
+  ctx.fillStyle=g; ctx.fillRect(0,0,cam.w,cam.h);
+  if(sky.night){ ctx.fillStyle="rgba(247,241,232,.85)"; world.stars.forEach(s=>{ ctx.beginPath(); ctx.arc(sx(s.x),sy(s.y),s.r,0,6.28); ctx.fill(); }); }
+  ctx.beginPath();
+  for(let y=0;y<=WORLD_H;y+=28){ const x=WORLD_W/2-mountainHalf(y); y===0?ctx.moveTo(sx(x),sy(y)):ctx.lineTo(sx(x),sy(y)); }
+  for(let y=WORLD_H;y>=0;y-=28) ctx.lineTo(sx(WORLD_W/2+mountainHalf(y)),sy(y));
+  ctx.closePath();
+  const mg=ctx.createLinearGradient(0,sy(0),0,sy(WORLD_H));
+  mg.addColorStop(0,rgb([214,214,210])); mg.addColorStop(0.18,rgb(sky.night?[48,56,72]:[118,132,112])); mg.addColorStop(1,rgb([74,96,70]));
+  ctx.fillStyle=mg; ctx.fill();
+  const lake=world.camps.find(c=>c.id==="lake");
+  if(lake){ ctx.save(); ctx.translate(sx(lake.x),sy(lake.y+36)); ctx.scale(1,.38); ctx.fillStyle="rgba(148,176,182,.8)"; ctx.beginPath(); ctx.arc(0,0,210,0,6.28); ctx.fill(); ctx.restore(); }
+  ctx.lineJoin="round"; ctx.lineCap="round"; ctx.strokeStyle="rgba(62,48,38,.55)"; ctx.lineWidth=22;
+  ctx.beginPath(); world.path.points.forEach((p,i)=> i?ctx.lineTo(sx(p.x),sy(p.y)):ctx.moveTo(sx(p.x),sy(p.y))); ctx.stroke();
+  ctx.strokeStyle="#8a6b4e"; ctx.lineWidth=14; ctx.stroke();
+  const fire=images.fire[Math.floor(sim.time*8)%4];
+  function deco(d){
+    const img=d.kind==="pine"?images.pine:d.kind==="pineSnow"?images.pineSnow:d.kind==="rocks"?images.rocks:images.flowers;
+    const h=d.kind==="rocks"?190*d.scale:d.kind==="flowers"?190*d.scale:420*d.scale;
+    drawSprite(img,sx(d.x),sy(d.y),h,d.flip);
+  }
+  world.decorations.filter(d=>d.y<sim.y).forEach(deco);
+  world.camps.forEach(site=>{
+    drawSprite(images.tent, sx(site.x)+(site.tentFlip?-36:36), sy(site.y)+6, 92, site.tentFlip);
+    if(site.id!=="summit") drawSprite(fire, sx(site.x)-18, sy(site.y)+10, 36, false);
+    else drawSprite(images.rocks, sx(site.x)-8, sy(site.y)+8, 38, false);
+    const camp=CAMPS.find(c=>c.id===site.id), photo=images.photos[site.id];
+    ctx.save(); ctx.translate(sx(site.x)+44, sy(site.y)-8); ctx.rotate(-0.12); ctx.fillStyle="#f3eee6"; ctx.fillRect(-22,-28,44,54);
+    if(photo) ctx.drawImage(photo,-18,-24,36,36); ctx.restore();
+  });
+  const frames=sim.walking?images.walk:images.idle;
+  const frame=frames[Math.floor(sim.anim*(sim.walking?8:3.2))%4];
+  drawSprite(frame, sx(sim.x), sy(sim.y), 72, sim.facing<0);
+  world.decorations.filter(d=>d.y>=sim.y).forEach(deco);
+}
+
+function elev(t){ return Math.round(CAMPS[0].elevation+(CAMPS[5].elevation-CAMPS[0].elevation)*t); }
+function persist(){ try{ localStorage.setItem(KEY, JSON.stringify({version:1,t:sim.t,opened:[...opened],muted})); }catch{} }
+
+function setPhase(p){
+  phase=p;
+  if(p!=="play"){ climb=false; descend=false; }
+  title.classList.toggle("hidden", p!=="title");
+  hud.classList.toggle("hidden", p==="title");
+  controls.classList.toggle("hidden", p!=="play");
+  letterWrap.classList.toggle("hidden", p!=="letter");
+  journalWrap.classList.toggle("hidden", p!=="journal");
+  summit.classList.toggle("hidden", p!=="summit");
+}
+
+function openLetter(id){
+  const camp=CAMPS.find(c=>c.id===id); if(!camp) return;
+  opened.add(id); active=id; persist();
+  letterImg.src=camp.photo; letterImg.alt=camp.name;
+  letterMeta.textContent=camp.name+" · "+camp.elevation+" m";
+  letterText.textContent=camp.letter;
+  setPhase("letter");
+  renderJournal();
+}
+
+function closeLetter(){
+  if(active==="summit" && opened.has("summit")) { setPhase("summit"); active=null; return; }
+  active=null; setPhase("play");
+}
+
+function renderJournal(){
+  journalGrid.innerHTML=CAMPS.map(c=>{
+    const found=opened.has(c.id);
+    return `<button ${found?`onclick="openLetter('${c.id}')"`:"disabled"}><span class="ph">${found?`<img src="${c.photo}" alt="${c.name}">`:"Hindi pa"}</span><br>${found?c.name:"—"}</button>`;
+  }).join("");
+}
+
+document.getElementById("begin").onclick=()=>{ setPhase("play"); };
+document.getElementById("letterClose").onclick=closeLetter;
+document.getElementById("journalBtn").onclick=()=>{ renderJournal(); setPhase("journal"); };
+document.getElementById("journalClose").onclick=()=>setPhase("play");
+document.getElementById("stay").onclick=()=>setPhase("play");
+document.getElementById("again").onclick=()=>{ sim.t=CAMPS[0].t; opened.clear(); persist(); const p=sample(world.path,sim.t); sim.x=p.x; sim.y=p.y; setPhase("play"); };
+document.getElementById("openBtn").onclick=()=>{ if(near) openLetter(near); };
+document.getElementById("muteBtn").onclick=()=>{ muted=!muted; };
+
+["up","down"].forEach(id=>{
+  const el=document.getElementById(id);
+  const set=v=>{ if(id==="up") climb=v; else descend=v; };
+  el.onpointerdown=e=>{ e.preventDefault(); try { el.setPointerCapture(e.pointerId); } catch {} set(true); };
+  el.onpointerup=el.onpointercancel=()=>set(false);
+  el.onlostpointercapture=()=>set(false);
+});
+
+window.addEventListener("keydown", e=>{
+  keys.add(e.code);
+  if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space"].includes(e.code)) e.preventDefault();
+  if((e.code==="Space"||e.code==="Enter") && phase==="play" && near) openLetter(near);
+  else if((e.code==="Space"||e.code==="Enter"||e.code==="Escape") && phase==="letter") closeLetter();
+  if(e.code==="Escape" && (phase==="journal"||phase==="summit")) setPhase("play");
+  if(e.code==="KeyJ" && phase==="play"){ renderJournal(); setPhase("journal"); }
+});
+window.addEventListener("keyup", e=>keys.delete(e.code));
+window.addEventListener("blur", ()=>{ keys.clear(); climb=false; descend=false; });
+
+let last=performance.now(), acc=0, persistAt=0;
+function loop(now){
+  const dt=Math.min(0.1,(now-last)/1000); last=now; acc+=dt;
+  while(acc>=1/60){ update(1/60); acc-=1/60; }
+  const dpr=Math.min(2,devicePixelRatio||1), cssW=canvas.clientWidth, cssH=canvas.clientHeight;
+  if(canvas.width!==Math.floor(cssW*dpr)||canvas.height!==Math.floor(cssH*dpr)){ canvas.width=Math.floor(cssW*dpr); canvas.height=Math.floor(cssH*dpr); }
+  const viewH=980, viewW=viewH*(cssW/Math.max(cssH,1)); cam.w=viewW; cam.h=viewH;
+  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.imageSmoothingEnabled=true;
+  ctx.save(); ctx.scale(cssW/viewW, cssH/viewH); draw(); ctx.restore();
+  requestAnimationFrame(loop);
+}
+function update(dt){
+  sim.time+=dt;
+  let mx=0,my=0;
+  if(phase==="play"){
+    if(keys.has("KeyA")||keys.has("ArrowLeft")) mx-=1;
+    if(keys.has("KeyD")||keys.has("ArrowRight")) mx+=1;
+    if(keys.has("KeyW")||keys.has("ArrowUp")||climb) my-=1;
+    if(keys.has("KeyS")||keys.has("ArrowDown")||descend) my+=1;
+  }
+  let walking=false;
+  if(mx||my){
+    const p=sample(world.path,sim.t);
+    const along=mx*p.tx+my*p.ty;
+    const dir=along===0?(my<0||mx>0?-1:1)*Math.sign(p.ty||1):Math.sign(along);
+    sim.t=Math.max(0,Math.min(1,sim.t+(dir*SPEED*dt)/world.path.total));
+    walking=true;
+  }
+  const p=sample(world.path,sim.t);
+  sim.x=p.x; sim.y=p.y; sim.tx=p.tx; sim.ty=p.ty;
+  if(walking) sim.facing=p.tx>=0?1:-1;
+  sim.walking=walking; sim.anim+=dt;
+  near=null; let best=NEAR;
+  CAMPS.forEach(c=>{ const d=Math.abs(sim.t-c.t); if(d<best){ best=d; near=c.id; } });
+  openBtn.classList.toggle("hidden", !(phase==="play" && near));
+  const camp=CAMPS.find(c=>c.id===near);
+  if(phase==="play" && camp && !opened.has(camp.id)){ prompt.classList.remove("hidden"); prompt.textContent=camp.prompt; }
+  else prompt.classList.add("hidden");
+  stats.textContent=`${opened.size}/6 camps · ${elev(sim.t)} m`;
+  const k=1-Math.exp(-dt*4.2);
+  cam.x+=(sim.x-cam.w/2-cam.x)*k; cam.y+=(sim.y-cam.h*0.62-cam.y)*k;
+  cam.x=Math.max(0,Math.min(WORLD_W-cam.w,cam.x)); cam.y=Math.max(0,Math.min(WORLD_H-cam.h,cam.y));
+  persistAt+=dt; if(persistAt>1.2){ persistAt=0; persist(); }
+}
+requestAnimationFrame(loop);
+
+// Gentle floating lights for a little storybook atmosphere.
+(function addAmbientMotes(){
+  const host = document.getElementById("ambientMotes");
+  if (!host || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  for (let n = 0; n < 14; n++) {
+    const mote = document.createElement("span");
+    mote.className = "ambient-mote";
+    mote.style.left = (4 + Math.random() * 92) + "%";
+    mote.style.setProperty("--duration", (10 + Math.random() * 12) + "s");
+    mote.style.setProperty("--delay", (-Math.random() * 18) + "s");
+    mote.style.setProperty("--drift", (-28 + Math.random() * 56) + "px");
+    host.appendChild(mote);
+  }
+})();
+
+// Prevent the phone's long-press copy/select/context menu while playing.
+document.addEventListener("contextmenu", (event) => event.preventDefault());
+document.addEventListener("selectstart", (event) => event.preventDefault());
+</script>
 </body>
 </html>
